@@ -4,6 +4,7 @@
  * Rules:
  *  /              → redirect to /login or to the user's dashboard
  *  /login         → redirect authenticated users to their dashboard
+ *  /signup        → redirect authenticated users to their dashboard
  *  /admin/*       → only accessible to admins; others go to their own area or login
  *  /employee/*    → only accessible to employees; others go to their own area or login
  */
@@ -25,8 +26,8 @@ export async function middleware(request) {
     );
   }
 
-  // ── Login page: push authenticated users to their dashboard ────────────────
-  if (pathname === '/login') {
+  // ── Login / Signup: push authenticated users to their dashboard ───────────
+  if (pathname === '/login' || pathname === '/signup') {
     if (session) {
       return NextResponse.redirect(
         new URL(session.role === 'admin' ? '/admin' : '/employee', request.url)

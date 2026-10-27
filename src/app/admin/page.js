@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './admin.module.css';
 
 export default function AdminPage() {
-  const [user, setUser]       = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser]             = useState(null);
+  const [loading, setLoading]       = useState(true);
+  const [pendingCount, setPending]  = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -16,11 +18,15 @@ export default function AdminPage() {
         if (data.error) {
           router.replace('/login');
         } else if (data.role !== 'admin') {
-          // Wrong role — send the person to their correct area
           router.replace('/employee');
         } else {
           setUser(data);
           setLoading(false);
+          // Fetch pending sign-up count (non-blocking)
+          fetch('/api/admin/signups?status=pending')
+            .then(r => r.json())
+            .then(d => setPending((d.signups || []).length))
+            .catch(() => {});
         }
       })
       .catch(() => router.replace('/login'));
@@ -52,6 +58,18 @@ export default function AdminPage() {
         </p>
 
         <p className={styles.email}>{user.email}</p>
+
+        {/* ── Sign-ups quick-link ─────────────────────────── */}
+        <Link href="/admin/signups" className={styles.signupsLink}>
+          <span className={styles.signupsLeft}>
+            <span className={styles.signupsIcon}>📋</span>
+            Sign-up Requests
+          </span>
+          {pendingCount > 0
+            ? <span className={styles.pendingBadge}>{pendingCount} pending</span>
+            : <span className={styles.signupsArrow}>→</span>
+          }
+        </Link>
 
         <button onClick={handleLogout} className={styles.logoutBtn}>
           Logout

@@ -21,9 +21,9 @@ export async function GET() {
     }
 
     const user = getUserById(Number(session.userId));
-    if (!user || !user.is_active) {
+    if (!user || user.status !== 'active') {
       return NextResponse.json(
-        { error: 'User not found or account has been deactivated' },
+        { error: 'User not found or account is not active' },
         { status: 401 }
       );
     }

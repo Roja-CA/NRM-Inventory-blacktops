@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './login.module.css';
 
@@ -86,6 +87,10 @@ export default function LoginPage() {
             {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
+
+        <p className={styles.footerLink}>
+          New here? <Link href="/signup">Sign up</Link>
+        </p>
       </div>
     </div>
   );

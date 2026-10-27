@@ -21,7 +21,29 @@ export async function POST(request) {
       passwordOk = await bcrypt.compare(password, user.password_hash);
     }
 
-    if (!user || !passwordOk || !user.is_active) {
+    // Wrong credentials → generic message (never reveal which field is wrong)
+    if (!user || !passwordOk) {
+      return NextResponse.json(
+        { error: 'Email or password is incorrect' },
+        { status: 401 }
+      );
+    }
+
+    // Correct password but account not yet active → explain why
+    if (user.status === 'pending') {
+      return NextResponse.json(
+        { error: 'Your account has been created. The owner will approve it soon.' },
+        { status: 403 }
+      );
+    }
+    if (user.status === 'rejected') {
+      return NextResponse.json(
+        { error: 'Your sign-up was not approved. Please contact the owner.' },
+        { status: 403 }
+      );
+    }
+    // Deactivated or unknown status → generic message
+    if (user.status !== 'active') {
       return NextResponse.json(
         { error: 'Email or password is incorrect' },
         { status: 401 }
