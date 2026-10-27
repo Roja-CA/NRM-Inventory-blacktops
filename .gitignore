@@ -8,8 +8,15 @@
 # testing
 /coverage
 
+# Next.js
+/.next
+/out
+
 # production
 /build
+
+# database (created at runtime, do not commit)
+/data
 
 # misc
 .DS_Store
