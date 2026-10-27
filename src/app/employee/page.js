@@ -15,6 +15,9 @@ export default function EmployeePage() {
       .then(data => {
         if (data.error) {
           router.replace('/login');
+        } else if (data.role !== 'employee') {
+          // Wrong role — send the person to their correct area
+          router.replace('/admin');
         } else {
           setUser(data);
           setLoading(false);

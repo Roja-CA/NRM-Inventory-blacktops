@@ -36,7 +36,7 @@ export async function middleware(request) {
   }
 
   // ── Admin area ─────────────────────────────────────────────────────────────
-  if (pathname.startsWith('/admin')) {
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
     if (!session) return NextResponse.redirect(new URL('/login', request.url));
     if (session.role !== 'admin') {
       // Employee who typed /admin by hand → send to their own area
@@ -46,7 +46,7 @@ export async function middleware(request) {
   }
 
   // ── Employee area ──────────────────────────────────────────────────────────
-  if (pathname.startsWith('/employee')) {
+  if (pathname === '/employee' || pathname.startsWith('/employee/')) {
     if (!session) return NextResponse.redirect(new URL('/login', request.url));
     if (session.role !== 'employee') {
       // Admin who typed /employee by hand → send to their own area
@@ -59,5 +59,7 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/', '/login', '/admin/:path*', '/employee/:path*'],
+  // Catch-all: runs on every path except Next.js internals and static files.
+  // More reliable than listing `/admin/:path*` which may miss the bare path.
+  matcher: ['/((?!_next/static|_next/image|favicon\\.ico).*)'],
 };

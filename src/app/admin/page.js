@@ -15,6 +15,9 @@ export default function AdminPage() {
       .then(data => {
         if (data.error) {
           router.replace('/login');
+        } else if (data.role !== 'admin') {
+          // Wrong role — send the person to their correct area
+          router.replace('/employee');
         } else {
           setUser(data);
           setLoading(false);
